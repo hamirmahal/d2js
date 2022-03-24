@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-export const kwds = {
+export const consensus = {
 'commit' : `commit();
 
 A *commit statement*, written commit();, commits to statement’s
@@ -22,19 +22,6 @@ after the associated commit statement.)
 `,
 
 'Participant.set' : `Participant.set(PART, ADDR); PART.set(ADDR);
-
-After execution, the given participant is fixed to the given address. It
-is invalid to attempt to .set a participant class. If a backend is
-running for this participant and its address does not match the given
-address, then it will abort. This may only occur within a consensus
-step.
-
-> \[missing\] is a good introductory project that demonstrates how to use
-> this feature of Reach.
-
-`,
-
-'.set' : `Participant.set(PART, ADDR); PART.set(ADDR);
 
 After execution, the given participant is fixed to the given address. It
 is invalid to attempt to .set a participant class. If a backend is
@@ -127,51 +114,6 @@ each evaluate to a unique participant, just like in a fork statement.
 
 `,
 
-'.timeRemaining' : `When dealing with absolute deadlines in parallelReduce, there is a
-common pattern in the TIMEOUT\_BLOCK to have participants race to
-publish and return the accumulator. There is a shorthand,
-.timeRemaining, available for this situation:
-
-const \[ timeRemaining, keepGoing \] = makeDeadline(deadline); const \[
-x, y, z \] =   parallelReduce(\[ 1, 2, 3 \])
-.while(keepGoing())     ...     .timeRemaining(timeRemaining())
-
-which will expand to:
-
-.timeout(timeRemaining(), () =\> {
-race(...Participants).publish();   return \[ x, y, z \]; })
-
-`,
-
-'.throwTimeout' : `.throwTimeout is a shorthand that will throw the accumulator as an
-exception when a timeout occurs. Therefore, a parallelReduce that uses
-this branch must be inside of a try statement. For example,
-
-try {   const \[ x, y, z \] =     parallelReduce(\[ 1, 2, 3 \])     ...
-.throwTimeout(deadline) } catch (e) { ... }
-
-will expand throwTimeout to:
-
-.timeout(deadline, () =\> {   throw \[ x, y, z \]; })
-
-**—**
-
-A parallel reduce statement is essentially an abbreviation of pattern of
-a while loop combined with a fork statement that you could write
-yourself. This is an extremely common pattern in decentralized
-applications.
-
-The idea is that there are some values (the LHS) which after
-intialization will be repeatedly updated uniquely by each of the racing
-participants until the condition does not hold.
-
-var LHS = INIT\_EXPR; invariant(INVARIANT\_EXPR) while(COND\_EXPR) {
-fork()   .case(PART\_EXPR,     PUBLISH\_EXPR,     PAY\_EXPR,     (m)
-\=\> {       LHS = CONSENSUS\_EXPR(m);       continue; })
-.timeout(DELAY\_EXPR, () =\>     TIMEOUT\_BLOCK); }
-
-`,
-
 'this' : `Inside of a consensus step, this refers to the address of the
 participant that performed the consensus transfer. This is useful when
 the consensus transfer was initiated by a race expression.
@@ -210,6 +152,8 @@ used in a consensus step after makeCommitment was used in a local step.
 
 `,
 
+};
+export const step = {
 'only' : `Alice.only(() =\> {   const pretzel = interact.random(); });
 
 A local step statement is written PART.only(() =\> BLOCK), where PART
@@ -762,6 +706,8 @@ nonNetPayAmt argument are optional.
 
 `,
 
+};
+export const compute = {
 'const' : `An *identifier definition* is either a value definition or a function
 definition. Each of these introduces one or more \_bound identifier\_s.
 
@@ -1035,17 +981,6 @@ or an array.
 
 `,
 
-'.length' : `Tuple.length(tup); tup.length; Array.length(arr); arr.length;
-
-Tuple.length Returns the length of the given tuple.
-
-Array.length Returns the length of the given array.
-
-Both may be abbreviated as expr.length where expr evaluates to a tuple
-or an array.
-
-`,
-
 'Tuple.set' : `Tuple.set(tup, idx, val); tup.set(idx, val); Array.set(arr, idx,
 val); arr.set(idx, val);
 
@@ -1078,32 +1013,7 @@ tuple or an array.
 
 `,
 
-'.set' : `Tuple.set(tup, idx, val); tup.set(idx, val); Array.set(arr, idx,
-val); arr.set(idx, val);
-
-Tuple.set Returns a new tuple identical to tup, except that index idx is
-replaced with val. The idx must be a compile-time constant, because
-tuples do not support dynamic access, because each element may be a
-different type.
-
-Array.set Returns a new array identical to arr, except that index idx is
-replaced with val.
-
-Both may be abbreviated as expr.set(idx, val) where expr evaluates to a
-tuple or an array.
-
-`,
-
 'Foldable.forEach' : `c.forEach(f) Foldable.forEach(c, f) Array.forEach(c, f)
-Map.forEach(c, f)
-
-Foldable.forEach(c, f) iterates the function f over the elements of a
-container c, discarding the result. This may be abbreviated as
-c.forEach(f).
-
-`,
-
-'.forEach' : `c.forEach(f) Foldable.forEach(c, f) Array.forEach(c, f)
 Map.forEach(c, f)
 
 Foldable.forEach(c, f) iterates the function f over the elements of a
@@ -1119,21 +1029,7 @@ by every element of the container, \`c\`.
 
 `,
 
-'.all' : `Foldable.all(c, f) Array.all(c, f) Map.all(c, f) c.all(f)
-
-Foldable.all(c, f) determines whether the predicate, \`f\`, is satisfied
-by every element of the container, \`c\`.
-
-`,
-
 'Foldable.any' : `Foldable.any(c, f) Array.any(c, f) Map.any(c, f) c.any(f)
-
-Foldable.any(c, f) determines whether the predicate, \`f\`, is satisfied
-by at least one element of the container, \`c\`.
-
-`,
-
-'.any' : `Foldable.any(c, f) Array.any(c, f) Map.any(c, f) c.any(f)
 
 Foldable.any(c, f) determines whether the predicate, \`f\`, is satisfied
 by at least one element of the container, \`c\`.
@@ -1146,33 +1042,13 @@ Foldable.or(c) returns the disjunction of a container of Bools.
 
 `,
 
-'.or' : `Foldable.or(c) Array.or(c) Map.or(c) c.or()
-
-Foldable.or(c) returns the disjunction of a container of Bools.
-
-`,
-
 'Foldable.and' : `Foldable.and(c) Array.and(c) Map.and(c) c.and()
 
 Foldable.and(c) returns the conjunction of a container of Bools.
 
 `,
 
-'.and' : `Foldable.and(c) Array.and(c) Map.and(c) c.and()
-
-Foldable.and(c) returns the conjunction of a container of Bools.
-
-`,
-
 'Foldable.includes' : `Foldable.includes(c, x) Array.includes(c, x) Map.includes(c, x)
-c.includes(x)
-
-Foldable.includes(c, x) determines whether the container includes the
-element, \`x\`.
-
-`,
-
-'.includes' : `Foldable.includes(c, x) Array.includes(c, x) Map.includes(c, x)
 c.includes(x)
 
 Foldable.includes(c, x) determines whether the container includes the
@@ -1187,20 +1063,7 @@ the predicate, \`f\`.
 
 `,
 
-'.count' : `Foldable.count(c, f) Array.count(c, f) Map.count(c, f) c.count(f)
-
-Foldable.count(c, f) returns the number of elements in \`c\` that satisfy
-the predicate, \`f\`.
-
-`,
-
 'Foldable.size' : `Foldable.size(c) Array.size(c) Map.size(c) c.size()
-
-Foldable.size(c) returns the number of elements in \`c\`.
-
-`,
-
-'.size' : `Foldable.size(c) Array.size(c) Map.size(c) c.size()
 
 Foldable.size(c) returns the number of elements in \`c\`.
 
@@ -1212,19 +1075,7 @@ Foldable.min(arr) returns the lowest number in a container of \`UInt\`s.
 
 `,
 
-'.min' : `Foldable.min(c) Array.min(c) Map.min(c) c.min()
-
-Foldable.min(arr) returns the lowest number in a container of \`UInt\`s.
-
-`,
-
 'Foldable.max' : `Foldable.max(c) Array.max(c) Map.max(c) c.max()
-
-Foldable.max(c) returns the largest number in a container of \`UInt\`s.
-
-`,
-
-'.max' : `Foldable.max(c) Array.max(c) Map.max(c) c.max()
 
 Foldable.max(c) returns the largest number in a container of \`UInt\`s.
 
@@ -1236,31 +1087,13 @@ Foldable.sum(c) returns the sum of a container of \`UInt\`s.
 
 `,
 
-'.sum' : `Foldable.sum(c) Array.sum(c) Map.sum(c) c.sum()
-
-Foldable.sum(c) returns the sum of a container of \`UInt\`s.
-
-`,
-
 'Foldable.product' : `Foldable.product(c) Array.product(c) Map.product(c) c.product()
 
 Foldable.product(c) returns the product of a container of \`UInt\`s.
 
 `,
 
-'.product' : `Foldable.product(c) Array.product(c) Map.product(c) c.product()
-
-Foldable.product(c) returns the product of a container of \`UInt\`s.
-
-`,
-
 'Foldable.average' : `Foldable.average(c) Array.average(c) Map.average(c) c.average()
-
-Foldable.average(c) returns the mean of a container of \`UInt\`s.
-
-`,
-
-'.average' : `Foldable.average(c) Array.average(c) Map.average(c) c.average()
 
 Foldable.average(c) returns the mean of a container of \`UInt\`s.
 
@@ -1283,23 +1116,7 @@ integer at compile-time.
 
 `,
 
-'.replicate' : `Array.replicate(5, "five") Array\_replicate(5, "five")
-
-Array.replicate(len, val) returns an array of length len, where each
-element is val. For example, Array.replicate(4, "four") returns
-\["four", "four", "four", "four"\]. The given len must evaluate to an
-integer at compile-time.
-
-`,
-
 'Array.concat' : `Array.concat(x, y) x.concat(y)
-
-Array.concat(x, y) concatenates the two arrays x and y. This may be
-abbreviated as x.concat(y).
-
-`,
-
-'.concat' : `Array.concat(x, y) x.concat(y)
 
 Array.concat(x, y) concatenates the two arrays x and y. This may be
 abbreviated as x.concat(y).
@@ -1321,28 +1138,7 @@ and y. This may be abbreviated as x.zip(y).
 
 `,
 
-'.zip' : `Array.zip(x, y) x.zip(y)
-
-Array.zip(x, y) returns a new array the same size as x and y (which
-must be the same size) whose elements are tuples of the elements of x
-and y. This may be abbreviated as x.zip(y).
-
-`,
-
 'Array.map' : `Array.map(arr, f) arr.map(f)
-
-Array.map(arr, f) returns a new array, arr\_mapped, the same size as
-arr, where arr\_mapped\[i\] = f(arr\[i\]) for all i. For example,
-Array.iota(4).map(x =\> x+1) returns \[1, 2, 3, 4\]. This may be
-abbreviated as arr.map(f).
-
-This function is generalized to an arbitrary number of arrays of the
-same size, which are provided before the f argument. For example,
-Array.iota(4).map(Array.iota(4), add) returns \[0, 2, 4, 6\].
-
-`,
-
-'.map' : `Array.map(arr, f) arr.map(f)
 
 Array.map(arr, f) returns a new array, arr\_mapped, the same size as
 arr, where arr\_mapped\[i\] = f(arr\[i\]) for all i. For example,
@@ -1370,31 +1166,7 @@ returns ((((0 + 0 + 0) + 1 + 1) + 2 + 2) + 3 + 3).
 
 `,
 
-'.reduce' : `Array.reduce(arr, z, f) arr.reduce(z, f)
-
-Array.reduce(arr, z, f) returns the [left
-fold](https://en.wikipedia.org/wiki/Fold_&higher-order_function)) of the
-function f over the given array with the initial value z. For example,
-Array.iota(4).reduce(0, add) returns ((0 + 1) + 2) + 3 = 6. This may
-be abbreviated as arr.reduce(z, f).
-
-This function is generalized to an arbitrary number of arrays of the
-same size, which are provided before the z argument. For example,
-Array.iota(4).reduce(Array.iota(4), 0, (x, y, z) =\> (z + x + y))
-returns ((((0 + 0 + 0) + 1 + 1) + 2 + 2) + 3 + 3).
-
-`,
-
 'Array.indexOf' : `Array.indexOf(arr, x) arr.indexOf(x)
-
-Array.indexOf(arr, x) returns the index of the first element in the
-given array that is equal to \`x\`. The return value is of type
-Maybe(UInt). If the value is not present in the array, None is
-returned.
-
-`,
-
-'.indexOf' : `Array.indexOf(arr, x) arr.indexOf(x)
 
 Array.indexOf(arr, x) returns the index of the first element in the
 given array that is equal to \`x\`. The return value is of type
@@ -1412,29 +1184,7 @@ None is returned.
 
 `,
 
-'.findIndex' : `Array.findIndex(arr, f) arr.findIndex(f)
-
-Array.findIndex(arr, f) returns the index of the first element in the
-given array that satisfies the predicate \`f\`. The return value is of
-type Maybe(UInt). If no value in the array satisfies the predicate,
-None is returned.
-
-`,
-
 'Map.reduce' : `Map.reduce(map, z, f) map.reduce(z, f)
-
-Map.reduce(map, z, f) returns the [left
-fold](https://en.wikipedia.org/wiki/Fold_&higher-order_function)) of the
-function f over the given mapping with the initial value z. For example,
-m.reduce(0, add) sums the elements of the mapping. This may be
-abbreviated as map.reduce(z, f).
-
-The function f must satisfy the property, for all z, a, b, f(f(z, b),
-a) == f(f(z, a), b), because the order of evaluation is unpredictable.
-
-`,
-
-'.reduce' : `Map.reduce(map, z, f) map.reduce(z, f)
 
 Map.reduce(map, z, f) returns the [left
 fold](https://en.wikipedia.org/wiki/Fold_&higher-order_function)) of the
@@ -1734,6 +1484,8 @@ to calculate up to \`2^64 - 1\`, so the largest power it can compute is
 
 `,
 
+};
+export const module = {
 'export' : `Module-level identifier definitions may be \_export\_ed by writing  export
 in front of them. For example, export const x = 1; export const \[a, b,
 ...more\] = \[ 0, 1, 2, 3, 4 \]; export function add1(x) { return x +
@@ -1798,6 +1550,8 @@ discussed in the section on usage.
 
 `,
 
+};
+export const appinit = {
 'deploy' : `deploy();
 
 A *deploy statement*, written deploy();, deploys the DApp and
@@ -1841,6 +1595,8 @@ connectors         [ETH, ALGO] (default)             A tuple of the connectors t
 
 `,
 
+};
+export const local = {
 'this' : `Inside of a local step, this refers to the participant performing the
 step. This is useful when the local step was initiated by an each
 expression.
@@ -1895,4 +1651,12 @@ consensus step.
 
 `,
 
+};
+export default {
+...consensus,
+...step,
+...compute,
+...module,
+...appinit,
+...local,
 };

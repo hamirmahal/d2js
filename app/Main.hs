@@ -11,7 +11,5 @@ main = do
   args <- getArgs
   case args of
     [] -> error "Specify filepath to directory containing Markdown documentation"
-    dir:_ ->
-      listDirectory dir
-      >>= mapM (readFile . (dir </>))
-      >>= process . concat
+    dir:_ -> process . map (dir </>) =<< listDirectory dir
+
